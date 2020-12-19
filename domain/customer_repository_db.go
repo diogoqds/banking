@@ -2,10 +2,10 @@ package domain
 
 import (
 	"database/sql"
-	"log"
 	"time"
 
 	"github.com/diogoqds/banking/errs"
+	"github.com/diogoqds/banking/logger"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -26,7 +26,7 @@ func (c CustomerRepositoryDb) FindAll(status string) ([]Customer, *errs.AppError
 	}
 
 	if err != nil {
-		log.Println("Error while querying customer table" + err.Error())
+		logger.Error("Error while querying customer table" + err.Error())
 		return nil, errs.NewInternalError("Error while querying customer table")
 	}
 
@@ -35,7 +35,7 @@ func (c CustomerRepositoryDb) FindAll(status string) ([]Customer, *errs.AppError
 		var c Customer
 		err := rows.Scan(&c.Id, &c.Name, &c.City, &c.Zipcode, &c.DateOfBirth, &c.Status)
 		if err != nil {
-			log.Println("Error while querying customer table" + err.Error())
+			logger.Error("Error while querying customer table" + err.Error())
 			return nil, errs.NewInternalError("Error while querying customer table")
 		}
 		customers = append(customers, c)
@@ -54,7 +54,7 @@ func (c CustomerRepositoryDb) FindById(id string) (*Customer, *errs.AppError) {
 		if err == sql.ErrNoRows {
 			return nil, errs.NewNotFoundError("Customer not found")
 		} else {
-			log.Println("Error while querying customer by id " + err.Error())
+			logger.Error("Error while querying customer by id " + err.Error())
 			return nil, errs.NewInternalError("unexpected database error")
 		}
 	}
