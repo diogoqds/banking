@@ -3,9 +3,11 @@ package app
 import (
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"net/http"
 
 	"github.com/diogoqds/banking/service"
+	"github.com/gorilla/mux"
 )
 
 type Customer struct {
@@ -28,5 +30,19 @@ func (ch *CustomerHandlers) getAllCustomer(w http.ResponseWriter, r *http.Reques
 	} else {
 		w.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(customers)
+	}
+}
+
+func (ch *CustomerHandlers) getCustomer(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	customerId := vars["customer_id"]
+	customer, err := ch.service.GetCustomer(customerId)
+
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, err.Error())
+	} else {
+		w.Header().Add("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(customer)
 	}
 }

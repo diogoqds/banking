@@ -37,6 +37,19 @@ func (c CustomerRepositoryDb) FindAll() ([]Customer, error) {
 	return customers, nil
 }
 
+func (c CustomerRepositoryDb) FindById(id string) (*Customer, error) {
+	findByIdSql := "select customer_id, name, city, zipcode, date_of_birth, status from customers where customer_id = ?"
+
+	row := c.client.QueryRow(findByIdSql, id)
+	var customer Customer
+	err := row.Scan(&customer.Id, &customer.Name, &customer.City, &customer.Zipcode, &customer.DateOfBirth, &customer.Status)
+	if err != nil {
+		log.Println("Error while querying customer by id" + err.Error())
+		return nil, err
+	}
+	return &customer, nil
+}
+
 func NewCustomerRepositoryDb() CustomerRepositoryDb {
 	client, err := sql.Open("mysql", "root:codecamp@tcp(localhost:3306)/banking")
 	if err != nil {
