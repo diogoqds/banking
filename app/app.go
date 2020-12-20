@@ -39,14 +39,17 @@ func Start() {
 	dbClient := getDbClient()
 
 	customerRepositoryDb := domain.NewCustomerRepositoryDb(dbClient)
-	// accountRepositoryDb := domain.NewAccountRepositoryDb(dbClient)
+	accountRepositoryDb := domain.NewAccountRepositoryDb(dbClient)
 
-	handlers := CustomerHandlers{service: service.NewCustomerService(customerRepositoryDb)}
+	customerHandler := CustomerHandlers{service: service.NewCustomerService(customerRepositoryDb)}
+	accountHandler := AccountHandler{service: service.NewAccountService(accountRepositoryDb)}
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/customers", handlers.getAllCustomer).Methods(http.MethodGet)
-	router.HandleFunc("/customers/{customer_id:[0-9]+}", handlers.getCustomer).Methods(http.MethodGet)
+	router.HandleFunc("/customers", customerHandler.getAllCustomer).Methods(http.MethodGet)
+	router.HandleFunc("/customers/{customer_id:[0-9]+}", customerHandler.getCustomer).Methods(http.MethodGet)
+
+	router.HandleFunc("/customers/{customer_id:[0-9]+}/account", accountHandler.NewAccount).Methods(http.MethodPost)
 
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")

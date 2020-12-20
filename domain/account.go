@@ -1,6 +1,9 @@
 package domain
 
-import "github.com/diogoqds/banking/errs"
+import (
+	"github.com/diogoqds/banking/dto"
+	"github.com/diogoqds/banking/errs"
+)
 
 type Account struct {
 	AccountId   string
@@ -13,4 +16,10 @@ type Account struct {
 
 type AccountRepository interface {
 	Save(Account) (*Account, *errs.AppError)
+}
+
+func (a Account) ToNewAccountResponseDto() dto.NewAccountResponse {
+	return dto.NewAccountResponse{
+		AccountId: a.AccountId,
+	}
 }
